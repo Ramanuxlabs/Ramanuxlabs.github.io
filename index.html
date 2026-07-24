@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramanux Labs</title>
+<style>
+:root{
+--bg:#faf8f4;--card:#fffdf9;--text:#171717;--muted:#666;
+--accent:#8b1e1e;--gold:#b58b2a;--border:#e7dfd3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:400}
+nav{position:sticky;top:0;background:rgba(250,248,244,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:18px 8%}
+nav a{text-decoration:none;color:#555;margin-left:24px;font-size:.92rem}
+nav a:hover{color:var(--accent)}
+.logo{font-size:1.4rem;font-family:Georgia,serif;letter-spacing:.5px}
+.hero{max-width:1200px;margin:auto;padding:110px 8% 80px}
+.hero h1{font-size:clamp(3rem,7vw,5rem);line-height:1.05;margin-bottom:20px}
+.hero p{max-width:700px;color:var(--muted);font-size:1.15rem}
+.btn{display:inline-block;margin-top:35px;padding:14px 28px;background:var(--accent);color:white;text-decoration:none}
+section{max-width:1200px;margin:auto;padding:80px 8%}
+.section-title{font-size:2.4rem;margin-bottom:35px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
+.card{background:var(--card);border:1px solid var(--border);padding:28px;border-radius:8px}
+.card h3{margin-bottom:10px}
+.small{color:var(--muted)}
+.project{border-left:4px solid var(--gold)}
+footer{margin-top:60px;padding:40px 8%;background:#171717;color:#ddd}
+footer a{color:#fff;text-decoration:none}
+@media(max-width:700px){nav{padding:15px 5%}.hero,section,footer{padding-left:5%;padding-right:5%}}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">Ramanux Labs</div>
+<div>
+<a href="#research">Research</a>
+<a href="#projects">Projects</a>
+<a href="#publications">Publications</a>
+<a href="#about">About</a>
+<a href="#contact">Contact</a>
+</div>
+</nav>
+
+<header class="hero">
+<p style="text-transform:uppercase;letter-spacing:2px;color:#888">Independent AI & NLP Research</p>
+<h1>Building trustworthy language technologies for real‑world problems.</h1>
+<p>
+Ramanux Labs is an independent research initiative based in Guwahati, Assam, India, focused on Large Language Models, Natural Language Processing, Legal AI, low-resource languages, and AI systems for critical domains. The lab publishes technical research, develops open-source prototypes, and contributes to applied AI for real-world deployment.
+</p>
+<a class="btn" href="#research">Explore Research</a>
+</header>
+
+<section id="research">
+<h2 class="section-title">Research Areas</h2>
+<div class="grid">
+<div class="card"><h3>Large Language Models</h3><p class="small">Reasoning, retrieval, evaluation and deployment.</p></div>
+<div class="card"><h3>Natural Language Processing</h3><p class="small">Information extraction, summarization and language understanding.</p></div>
+<div class="card"><h3>Legal AI</h3><p class="small">AI systems for legal documents and regulatory knowledge.</p></div>
+<div class="card"><h3>Low‑Resource Languages</h3><p class="small">Research for underrepresented Indian languages.</p></div>
+<div class="card"><h3>AI for Critical Infrastructure</h3><p class="small">Applied AI for high‑reliability environments.</p></div>
+<div class="card"><h3>Open Research</h3><p class="small">Technical articles, reproducible code and research prototypes.</p></div>
+</div>
+</section>
+
+<section id="projects">
+<h2 class="section-title">Current Projects</h2>
+<div class="card project">
+<h3>DuoMind</h3>
+<p><strong>Status:</strong> Research Prototype</p>
+<p class="small">
+An offline AI assistant for policy, compliance and domain-specific reasoning with
+traceable responses and privacy-first deployment.
+</p>
+</div>
+</section>
+
+<section id="publications">
+<h2 class="section-title">Publications & Open Source</h2>
+<div class="grid">
+<div class="card">
+<h3>Technical Articles</h3>
+<p class="small">Medium articles explaining AI from first principles.</p>
+</div>
+<div class="card">
+<h3>Research Papers</h3>
+<p class="small">Peer-reviewed publications and technical reports.</p>
+</div>
+<div class="card">
+<h3>GitHub</h3>
+<p class="small">Open-source implementations, notebooks and experiments.</p>
+</div>
+</div>
+</section>
+
+<section id="about">
+<h2 class="section-title">About Ramanux Labs</h2>
+<p class="small">
+Ramanux Labs is an independent AI and NLP research initiative based in Guwahati, Assam, India. The lab develops research prototypes, publishes technical knowledge, and contributes open-source software for applied artificial intelligence — with a focus on large language models, retrieval-augmented generation, and legal AI systems.
+</p>
+</section>
+
+<section id="contact">
+<h2 class="section-title">Contact</h2>
+<div class="grid">
+<div class="card"><h3>Email</h3><p>ramanuxlabs@gmail.com</p></div>
+<div class="card"><h3>GitHub</h3><p>https://github.com/Ramanuxlabs</p></div>
+<!--<div class="card"><h3>Medium</h3><p>Add your Medium profile here.</p></div>-->
+</div>
+</section>
+
+<footer>
+<p><strong>Ramanux Labs</strong></p>
+<p> AI & NLP Research Lab</p>
+<p>Guwahati, Assam, India</p>
+</footer>
+
+</body>
+</html>
