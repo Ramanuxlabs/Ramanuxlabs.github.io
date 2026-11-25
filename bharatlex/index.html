@@ -11,7 +11,7 @@ button{cursor:pointer}label{font-size:12px;white-space:nowrap}
 #panel a{color:#7fb0ff;cursor:pointer;display:block;margin:2px 0}#legend{position:fixed;left:10px;bottom:10px;background:#000a;padding:8px 10px;border-radius:8px;font-size:12px;z-index:3}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
 #msg{position:fixed;left:10px;bottom:90px;font-size:12px;color:#aaa;z-index:3}
-</style><script src="https://unpkg.com/three-spritetext"></script><script src="https://unpkg.com/3d-force-graph"></script></head><body>
+</style><script src="https://unpkg.com/3d-force-graph"></script></head><body>
 <div id="bar"><b>BharatLex Explorer</b>
 <input id="q" placeholder="Search e.g. BNS 103, murder, bail" list="dl"><datalist id="dl"></datalist>
 <select id="actf"><option value="">All acts</option><option>BNS</option><option>BNSS</option><option>BSA</option></select>
@@ -38,17 +38,11 @@ fetch("graph.json").then(r=>r.json()).then(d=>{
  $("dl").innerHTML=d.nodes.map(n=>`<option value="${n.label}">`).join("");
  G=ForceGraph3D()($("g")).graphData(d).backgroundColor("#0a0a0a")
   .nodeColor(n=>pathSet.has(n.id)?"#ffffff":(n.type==="section"?SEC[n.act]:COL[n.type]))
-  .nodeVal(n=>n.type==="act"?160:n.type==="theme"?30:n.val).nodeLabel(n=>n.label).nodeOpacity(.9)
-  .nodeThreeObjectExtend(true)
-  .nodeThreeObject(n=>{if(n.type==="section")return null;
-    const t=new SpriteText(n.type==="act"?n.id:n.label);t.color=n.type==="act"?"#ffd9a0":"#9cc4ff";
-    t.textHeight=n.type==="act"?14:7;t.position.y=n.type==="act"?16:9;return t})
+  .nodeVal(n=>n.val).nodeLabel(n=>n.label).nodeOpacity(.9)
   .linkColor(l=>pathLinks.has(l)?"#fff":LC[l.kind]).linkOpacity(.35)
   .linkWidth(l=>pathLinks.has(l)?3:0).linkVisibility(visible)
   .onNodeClick(show);
- G.d3Force("charge").strength(n=>n.type==="section"?-45:-200);
- G.d3Force("link").distance(l=>l.kind==="in_act"?110:l.kind==="theme"?90:45);
- G.onEngineStop(()=>{if(!window._fit){window._fit=1;G.zoomToFit(900,60)}});
+ G.d3Force("charge").strength(-25);
 });
 function visible(l){
  if(l.kind!=="in_act"&&!$("k_"+l.kind).checked)return false;
