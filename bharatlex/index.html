@@ -10,7 +10,7 @@ button{cursor:pointer}label{font-size:12px;white-space:nowrap}
 #panel h3{margin:0 0 6px;color:#f0a040}#panel .hi{color:#9fd0ff;margin-top:10px;white-space:pre-wrap}#panel .en{white-space:pre-wrap}
 #panel a{color:#7fb0ff;cursor:pointer;display:block;margin:2px 0}#legend{position:fixed;left:10px;bottom:10px;background:#000a;padding:8px 10px;border-radius:8px;font-size:12px;z-index:3}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-#msg{position:fixed;left:10px;bottom:90px;font-size:12px;color:#aaa;z-index:3}
+#msg{position:fixed;left:10px;bottom:130px;font-size:12px;color:#aaa;z-index:3}
 </style><script src="https://unpkg.com/3d-force-graph"></script></head><body>
 <div id="bar"><b>BharatLex Explorer</b>
 <input id="q" placeholder="Search e.g. BNS 103, murder, bail" list="dl"><datalist id="dl"></datalist>
@@ -38,11 +38,13 @@ fetch("graph.json").then(r=>r.json()).then(d=>{
  $("dl").innerHTML=d.nodes.map(n=>`<option value="${n.label}">`).join("");
  G=ForceGraph3D()($("g")).graphData(d).backgroundColor("#0a0a0a")
   .nodeColor(n=>pathSet.has(n.id)?"#ffffff":(n.type==="section"?SEC[n.act]:COL[n.type]))
-  .nodeVal(n=>n.val).nodeLabel(n=>n.label).nodeOpacity(.9)
+  .nodeVal(n=>pathSet.has(n.id)?60:n.type==="act"?160:n.type==="theme"?30:n.val).nodeLabel(n=>n.label).nodeOpacity(.9)
   .linkColor(l=>pathLinks.has(l)?"#fff":LC[l.kind]).linkOpacity(.35)
-  .linkWidth(l=>pathLinks.has(l)?3:0).linkVisibility(visible)
+  .linkWidth(l=>pathLinks.has(l)?4:0).linkVisibility(visible)
   .onNodeClick(show);
- G.d3Force("charge").strength(-25);
+ G.d3Force("charge").strength(n=>n.type==="section"?-45:-200);
+ G.d3Force("link").distance(l=>l.kind==="in_act"?110:l.kind==="theme"?90:45);
+ G.onEngineStop(()=>{if(!window._fit){window._fit=1;G.zoomToFit(900,60)}});
 });
 function visible(l){
  if(l.kind!=="in_act"&&!$("k_"+l.kind).checked)return false;
@@ -57,7 +59,7 @@ const norm=x=>x.toLowerCase().replace(/[§\s:]+/g,"");
 function find(s){const k=norm(s);if(!k)return null;
  return data.nodes.find(n=>norm(n.label)===k)||data.nodes.find(n=>norm(n.label).includes(k))}
 function show(n){
- G.cameraPosition({x:n.x*1.3+20,y:n.y*1.3+20,z:n.z*1.3+60},n,900);
+ const d=Math.hypot(n.x,n.y,n.z)||1,k=1+330/d;G.cameraPosition({x:n.x*k,y:n.y*k,z:n.z*k},n,900);
  let h=`<h3>${n.label}</h3>`;
  if(n.type==="section")h+=`<div class="en">${n.en}</div><div class="hi">${n.hi}</div>`;
  const rel={};(nb[n.id]||[]).forEach(([id,k])=>{if(k!=="in_act")(rel[k]=rel[k]||[]).push(id)});
@@ -74,8 +76,9 @@ $("go").onclick=()=>{const a=find($("from").value),b=find($("to").value);
  const p=[];for(let c=b.id;c!==null;c=prev[c])p.unshift(c);
  pathSet=new Set(p);pathLinks=new Set(data.links.filter(l=>{
   const s=lid(l.source),t=lid(l.target);const i=p.indexOf(s),j=p.indexOf(t);return i>=0&&j>=0&&Math.abs(i-j)===1}));
- G.nodeColor(G.nodeColor()).linkColor(G.linkColor()).linkWidth(G.linkWidth());
+ G.nodeColor(G.nodeColor()).nodeVal(G.nodeVal()).linkColor(G.linkColor()).linkWidth(G.linkWidth());
+ G.zoomToFit(900,120,n=>pathSet.has(n.id));
  $("msg").textContent="Path: "+p.map(x=>byId[x].label).join(" → ")};
 $("reset").onclick=()=>{pathSet=new Set();pathLinks=new Set();$("panel").style.display="none";$("msg").textContent="";
- G.nodeColor(G.nodeColor()).linkColor(G.linkColor()).linkWidth(G.linkWidth());G.zoomToFit(800)};
+ G.nodeColor(G.nodeColor()).nodeVal(G.nodeVal()).linkColor(G.linkColor()).linkWidth(G.linkWidth());G.zoomToFit(800)};
 </script></body></html>
