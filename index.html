@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ramanux Labs</title>
+<link rel="icon" href="logo.png">
 <style>
 :root{
 --bg:#faf8f4;--card:#fffdf9;--text:#171717;--muted:#666;
@@ -13,14 +14,17 @@
 html{scroll-behavior:smooth}
 body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
 h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:400}
-nav{position:sticky;top:0;background:rgba(250,248,244,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:18px 8%}
+nav{position:sticky;top:0;z-index:10;background:rgba(250,248,244,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:14px 8%}
 nav a{text-decoration:none;color:#555;margin-left:24px;font-size:.92rem}
 nav a:hover{color:var(--accent)}
-.logo{font-size:1.4rem;font-family:Georgia,serif;letter-spacing:.5px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;margin-left:0}
+.brand img{height:38px;width:auto;display:block}
+.logo{font-size:1.4rem;font-family:Georgia,serif;letter-spacing:.5px;color:var(--text)}
 .hero{max-width:1200px;margin:auto;padding:110px 8% 80px}
 .hero h1{font-size:clamp(3rem,7vw,5rem);line-height:1.05;margin-bottom:20px}
 .hero p{max-width:700px;color:var(--muted);font-size:1.15rem}
-.btn{display:inline-block;margin-top:35px;padding:14px 28px;background:var(--accent);color:white;text-decoration:none}
+.btn{display:inline-block;margin-top:35px;margin-right:12px;padding:14px 28px;background:var(--accent);color:white;text-decoration:none}
+.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 section{max-width:1200px;margin:auto;padding:80px 8%}
 .section-title{font-size:2.4rem;margin-bottom:35px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
@@ -28,31 +32,42 @@ section{max-width:1200px;margin:auto;padding:80px 8%}
 .card h3{margin-bottom:10px}
 .small{color:var(--muted)}
 .project{border-left:4px solid var(--gold)}
+.pubs{display:flex;flex-direction:column;gap:18px}
+.pub{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--gold);padding:22px 26px;border-radius:8px}
+.pub h3{font-size:1.2rem;margin-bottom:4px}
+.pub .venue{color:var(--accent);font-size:.92rem;letter-spacing:.2px}
+.pub .note{color:var(--muted);font-size:.95rem;margin-top:6px}
+.pub a{color:var(--accent);font-size:.92rem;margin-right:14px}
+.demo-frame{width:100%;height:560px;border:1px solid var(--border);border-radius:8px;background:#0a0a0a}
+.demo-actions{margin-top:14px}
+.demo-actions a{color:var(--accent)}
 footer{margin-top:60px;padding:40px 8%;background:#171717;color:#ddd}
 footer a{color:#fff;text-decoration:none}
-@media(max-width:700px){nav{padding:15px 5%}.hero,section,footer{padding-left:5%;padding-right:5%}}
+@media(max-width:700px){nav{padding:12px 5%}nav a{margin-left:14px}.hero,section,footer{padding-left:5%;padding-right:5%}.demo-frame{height:420px}}
 </style>
 </head>
 <body>
 
 <nav>
-<div class="logo">Ramanux Labs</div>
+<a class="brand" href="#top"><img src="logo.png" alt="Ramanux Labs logo"><span class="logo">Ramanux Labs</span></a>
 <div>
 <a href="#research">Research</a>
 <a href="#projects">Projects</a>
 <a href="#publications">Publications</a>
+<a href="#demo">Demo</a>
 <a href="#about">About</a>
 <a href="#contact">Contact</a>
 </div>
 </nav>
 
-<header class="hero">
+<header class="hero" id="top">
 <p style="text-transform:uppercase;letter-spacing:2px;color:#888">Independent AI & NLP Research</p>
 <h1>Building trustworthy language technologies for real‑world problems.</h1>
 <p>
 Ramanux Labs is an independent research initiative based in Guwahati, Assam, India, focused on Large Language Models, Natural Language Processing, Legal AI, low-resource languages, and AI systems for critical domains. The lab publishes technical research, develops open-source prototypes, and contributes to applied AI for real-world deployment.
 </p>
 <a class="btn" href="#research">Explore Research</a>
+<a class="btn alt" href="#demo">Try the BharatLex Explorer</a>
 </header>
 
 <section id="research">
@@ -69,6 +84,15 @@ Ramanux Labs is an independent research initiative based in Guwahati, Assam, Ind
 
 <section id="projects">
 <h2 class="section-title">Current Projects</h2>
+<div class="grid" style="grid-template-columns:1fr">
+<div class="card project">
+<h3>BharatLex</h3>
+<p><strong>Status:</strong> Benchmark &amp; interactive explorer</p>
+<p class="small">
+A bilingual Hindi–English retrieval benchmark for the Bharatiya Sanhitas 2023 (BNS, BNSS, BSA): 1,059 aligned sections, 2,364 subsection queries and 3,610 questions with verified answer spans.
+<a href="#demo" style="color:var(--accent)">Open the explorer ↓</a>
+</p>
+</div>
 <div class="card project">
 <h3>DuoMind</h3>
 <p><strong>Status:</strong> Research Prototype</p>
@@ -77,24 +101,36 @@ An offline AI assistant for policy, compliance and domain-specific reasoning wit
 traceable responses and privacy-first deployment.
 </p>
 </div>
+</div>
 </section>
 
 <section id="publications">
-<h2 class="section-title">Publications & Open Source</h2>
-<div class="grid">
-<div class="card">
-<h3>Technical Articles</h3>
-<p class="small">Medium articles explaining AI from first principles.</p>
+<h2 class="section-title">Publications</h2>
+<div class="pubs">
+
+<div class="pub">
+<h3>BharatLex: A Bilingual Hindi–English Retrieval Benchmark for the Bharatiya Sanhitas 2023</h3>
+<div class="venue">ICON 2026 · Guwahati, India</div>
+<p class="note">Cross-lingual retrieval benchmark with seven tasks, LLM-as-Judge alignment analysis and nine baseline systems.</p>
 </div>
-<div class="card">
-<h3>Research Papers</h3>
-<p class="small">Peer-reviewed publications and technical reports.</p>
+
+<div class="pub">
+<h3>ADSIR: Adaptive Document Span Information Retrieval</h3>
+<div class="venue">CODS-COMAD 2026 · Main Track (poster), ACM ICPS</div>
+<p class="note">Span-level retrieval for regulatory question answering, evaluated on RegulationQA and ObliQA.</p>
 </div>
-<div class="card">
-<h3>GitHub</h3>
-<p class="small">Open-source implementations, notebooks and experiments.</p>
+
 </div>
-</div>
+<p class="small" style="margin-top:22px">More technical articles on Medium and code on <a href="https://github.com/Ramanuxlabs" style="color:var(--accent)">GitHub</a>.</p>
+</section>
+
+<section id="demo">
+<h2 class="section-title">BharatLex Explorer</h2>
+<p class="small" style="margin-bottom:18px;max-width:760px">
+An interactive 3D map of the Bharatiya Nyaya Sanhita, Nagarik Suraksha Sanhita and Sakshya Adhiniyam. Click a section to read the Hindi and English text side by side, search by section or topic, and find a path between two provisions. Links are derived from cross-references, keyword themes and text similarity.
+</p>
+<iframe class="demo-frame" src="bharatlex/" title="BharatLex Explorer" loading="lazy"></iframe>
+<p class="demo-actions"><a href="bharatlex/" target="_blank" rel="noopener">Open full screen ↗</a></p>
 </section>
 
 <section id="about">
@@ -108,14 +144,14 @@ Ramanux Labs is an independent AI and NLP research initiative based in Guwahati,
 <h2 class="section-title">Contact</h2>
 <div class="grid">
 <div class="card"><h3>Email</h3><p>ramanuxlabs@gmail.com</p></div>
-<div class="card"><h3>GitHub</h3><p>https://github.com/Ramanuxlabs</p></div>
+<div class="card"><h3>GitHub</h3><p><a href="https://github.com/Ramanuxlabs" style="color:inherit">https://github.com/Ramanuxlabs</a></p></div>
 <!--<div class="card"><h3>Medium</h3><p>Add your Medium profile here.</p></div>-->
 </div>
 </section>
 
 <footer>
 <p><strong>Ramanux Labs</strong></p>
-<p> AI & NLP Research Lab</p>
+<p>AI & NLP Research Lab</p>
 <p>Guwahati, Assam, India</p>
 </footer>
 
