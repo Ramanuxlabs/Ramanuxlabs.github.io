@@ -1,159 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ramanux Labs</title>
-<link rel="icon" href="logo.png">
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BharatLex Explorer</title>
 <style>
-:root{
---bg:#faf8f4;--card:#fffdf9;--text:#171717;--muted:#666;
---accent:#8b1e1e;--gold:#b58b2a;--border:#e7dfd3;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
-h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:400}
-nav{position:sticky;top:0;z-index:10;background:rgba(250,248,244,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:14px 8%}
-nav a{text-decoration:none;color:#555;margin-left:24px;font-size:.92rem}
-nav a:hover{color:var(--accent)}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;margin-left:0}
-.brand img{height:38px;width:auto;display:block}
-.logo{font-size:1.4rem;font-family:Georgia,serif;letter-spacing:.5px;color:var(--text)}
-.hero{max-width:1200px;margin:auto;padding:110px 8% 80px}
-.hero h1{font-size:clamp(3rem,7vw,5rem);line-height:1.05;margin-bottom:20px}
-.hero p{max-width:700px;color:var(--muted);font-size:1.15rem}
-.btn{display:inline-block;margin-top:35px;margin-right:12px;padding:14px 28px;background:var(--accent);color:white;text-decoration:none}
-.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-section{max-width:1200px;margin:auto;padding:80px 8%}
-.section-title{font-size:2.4rem;margin-bottom:35px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
-.card{background:var(--card);border:1px solid var(--border);padding:28px;border-radius:8px}
-.card h3{margin-bottom:10px}
-.small{color:var(--muted)}
-.project{border-left:4px solid var(--gold)}
-.pubs{display:flex;flex-direction:column;gap:18px}
-.pub{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--gold);padding:22px 26px;border-radius:8px}
-.pub h3{font-size:1.2rem;margin-bottom:4px}
-.pub .venue{color:var(--accent);font-size:.92rem;letter-spacing:.2px}
-.pub .note{color:var(--muted);font-size:.95rem;margin-top:6px}
-.pub a{color:var(--accent);font-size:.92rem;margin-right:14px}
-.demo-frame{width:100%;height:560px;border:1px solid var(--border);border-radius:8px;background:#0a0a0a}
-.demo-actions{margin-top:14px}
-.demo-actions a{color:var(--accent)}
-footer{margin-top:60px;padding:40px 8%;background:#171717;color:#ddd}
-footer a{color:#fff;text-decoration:none}
-@media(max-width:700px){nav{padding:12px 5%}nav a{margin-left:14px}.hero,section,footer{padding-left:5%;padding-right:5%}.demo-frame{height:420px}}
-</style>
-</head>
-<body>
-
-<nav>
-<a class="brand" href="#top"><img src="logo.png" alt="Ramanux Labs logo"><span class="logo">Ramanux Labs</span></a>
-<div>
-<a href="#research">Research</a>
-<a href="#projects">Projects</a>
-<a href="#publications">Publications</a>
-<a href="#demo">Demo</a>
-<a href="#about">About</a>
-<a href="#contact">Contact</a>
-</div>
-</nav>
-
-<header class="hero" id="top">
-<p style="text-transform:uppercase;letter-spacing:2px;color:#888">Independent AI & NLP Research</p>
-<h1>Building trustworthy language technologies for real‑world problems.</h1>
-<p>
-Ramanux Labs is an independent research initiative based in Guwahati, Assam, India, focused on Large Language Models, Natural Language Processing, Legal AI, low-resource languages, and AI systems for critical domains. The lab publishes technical research, develops open-source prototypes, and contributes to applied AI for real-world deployment.
-</p>
-<a class="btn" href="#research">Explore Research</a>
-<a class="btn alt" href="#demo">Try the BharatLex Explorer</a>
-</header>
-
-<section id="research">
-<h2 class="section-title">Research Areas</h2>
-<div class="grid">
-<div class="card"><h3>Large Language Models</h3><p class="small">Reasoning, retrieval, evaluation and deployment.</p></div>
-<div class="card"><h3>Natural Language Processing</h3><p class="small">Information extraction, summarization and language understanding.</p></div>
-<div class="card"><h3>Legal AI</h3><p class="small">AI systems for legal documents and regulatory knowledge.</p></div>
-<div class="card"><h3>Low‑Resource Languages</h3><p class="small">Research for underrepresented Indian languages.</p></div>
-<div class="card"><h3>AI for Critical Infrastructure</h3><p class="small">Applied AI for high‑reliability environments.</p></div>
-<div class="card"><h3>Open Research</h3><p class="small">Technical articles, reproducible code and research prototypes.</p></div>
-</div>
-</section>
-
-<section id="projects">
-<h2 class="section-title">Current Projects</h2>
-<div class="grid" style="grid-template-columns:1fr">
-<div class="card project">
-<h3>BharatLex</h3>
-<p><strong>Status:</strong> Benchmark &amp; interactive explorer</p>
-<p class="small">
-A bilingual Hindi–English retrieval benchmark for the Bharatiya Sanhitas 2023 (BNS, BNSS, BSA): 1,059 aligned sections, 2,364 subsection queries and 3,610 questions with verified answer spans.
-<a href="#demo" style="color:var(--accent)">Open the explorer ↓</a>
-</p>
-</div>
-<div class="card project">
-<h3>DuoMind</h3>
-<p><strong>Status:</strong> Research Prototype</p>
-<p class="small">
-An offline AI assistant for policy, compliance and domain-specific reasoning with
-traceable responses and privacy-first deployment.
-</p>
-</div>
-</div>
-</section>
-
-<section id="publications">
-<h2 class="section-title">Publications</h2>
-<div class="pubs">
-
-<div class="pub">
-<h3>BharatLex: A Bilingual Hindi–English Retrieval Benchmark for the Bharatiya Sanhitas 2023</h3>
-<div class="venue">ICON 2026 · Guwahati, India</div>
-<p class="note">Cross-lingual retrieval benchmark with seven tasks, LLM-as-Judge alignment analysis and nine baseline systems.</p>
-</div>
-
-<div class="pub">
-<h3>ADSIR: Adaptive Document Span Information Retrieval</h3>
-<div class="venue">CODS-COMAD 2026 · Main Track (poster), ACM ICPS</div>
-<p class="note">Span-level retrieval for regulatory question answering, evaluated on RegulationQA and ObliQA.</p>
-</div>
-
-</div>
-<p class="small" style="margin-top:22px">More technical articles on Medium and code on <a href="https://github.com/Ramanuxlabs" style="color:var(--accent)">GitHub</a>.</p>
-</section>
-
-<section id="demo">
-<h2 class="section-title">BharatLex Explorer</h2>
-<p class="small" style="margin-bottom:18px;max-width:760px">
-An interactive 3D map of the Bharatiya Nyaya Sanhita, Nagarik Suraksha Sanhita and Sakshya Adhiniyam. Click a section to read the Hindi and English text side by side, search by section or topic, and find a path between two provisions. Links are derived from cross-references, keyword themes and text similarity.
-</p>
-<iframe class="demo-frame" src="bharatlex/index.html" title="BharatLex Explorer" loading="lazy"></iframe>
-<p class="demo-actions"><a href="bharatlex/index.html" target="_blank" rel="noopener">Open full screen ↗</a></p>
-</section>
-
-<section id="about">
-<h2 class="section-title">About Ramanux Labs</h2>
-<p class="small">
-Ramanux Labs is an independent AI and NLP research initiative based in Guwahati, Assam, India. The lab develops research prototypes, publishes technical knowledge, and contributes open-source software for applied artificial intelligence — with a focus on large language models, retrieval-augmented generation, and legal AI systems.
-</p>
-</section>
-
-<section id="contact">
-<h2 class="section-title">Contact</h2>
-<div class="grid">
-<div class="card"><h3>Email</h3><p>ramanuxlabs@gmail.com</p></div>
-<div class="card"><h3>GitHub</h3><p><a href="https://github.com/Ramanuxlabs" style="color:inherit">https://github.com/Ramanuxlabs</a></p></div>
-<!--<div class="card"><h3>Medium</h3><p>Add your Medium profile here.</p></div>-->
-</div>
-</section>
-
-<footer>
-<p><strong>Ramanux Labs</strong></p>
-<p>AI & NLP Research Lab</p>
-<p>Guwahati, Assam, India</p>
-</footer>
-
-</body>
-</html>
+*{box-sizing:border-box}body{margin:0;background:#0a0a0a;color:#ddd;font-family:system-ui,sans-serif;overflow:hidden}
+#bar{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 10px;background:#000c}
+#bar b{color:#f0a040;margin-right:6px}input,select,button{background:#1a1a1a;color:#ddd;border:1px solid #444;border-radius:6px;padding:6px 8px;font-size:13px}
+button{cursor:pointer}label{font-size:12px;white-space:nowrap}
+#panel{position:fixed;right:0;top:48px;bottom:0;width:min(420px,92vw);background:#0d0d0df2;border-left:1px solid #333;padding:12px;overflow:auto;display:none;z-index:4;font-size:14px;line-height:1.5}
+#panel h3{margin:0 0 6px;color:#f0a040}#panel .hi{color:#9fd0ff;margin-top:10px;white-space:pre-wrap}#panel .en{white-space:pre-wrap}
+#panel a{color:#7fb0ff;cursor:pointer;display:block;margin:2px 0}#legend{position:fixed;left:10px;bottom:10px;background:#000a;padding:8px 10px;border-radius:8px;font-size:12px;z-index:3}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+#msg{position:fixed;left:10px;bottom:90px;font-size:12px;color:#aaa;z-index:3}
+</style><script src="https://unpkg.com/three-spritetext"></script><script src="https://unpkg.com/3d-force-graph"></script></head><body>
+<div id="bar"><b>BharatLex Explorer</b>
+<input id="q" placeholder="Search e.g. BNS 103, murder, bail" list="dl"><datalist id="dl"></datalist>
+<select id="actf"><option value="">All acts</option><option>BNS</option><option>BNSS</option><option>BSA</option></select>
+<label><input type="checkbox" id="k_refers_to" checked> references</label>
+<label><input type="checkbox" id="k_similar" checked> similar</label>
+<label><input type="checkbox" id="k_theme" checked> themes</label>
+<input id="from" size="9" placeholder="path from"><input id="to" size="9" placeholder="to"><button id="go">Find path</button>
+<button id="reset">Reset</button></div>
+<div id="g"></div><div id="panel"></div><div id="msg"></div>
+<div id="legend"><div><span class="dot" style="background:#f0a040"></span>Act</div>
+<div><span class="dot" style="background:#4488ee"></span>Theme</div>
+<div><span class="dot" style="background:#e5534b"></span>BNS section</div>
+<div><span class="dot" style="background:#3fb97c"></span>BNSS section</div>
+<div><span class="dot" style="background:#c9c9c9"></span>BSA section</div></div>
+<script>
+const COL={act:"#f0a040",theme:"#4488ee"},SEC={BNS:"#e5534b",BNSS:"#3fb97c",BSA:"#c9c9c9"};
+const LC={in_act:"#555",theme:"#2f5fa8",refers_to:"#f0a040",similar:"#888"};
+let data,G,byId={},nb={},pathSet=new Set(),pathLinks=new Set();
+const $=id=>document.getElementById(id);
+const lid=e=>typeof e==="object"?e.id:e;
+fetch("graph.json").then(r=>r.json()).then(d=>{
+ data=d;d.nodes.forEach(n=>{byId[n.id]=n;nb[n.id]=[]});
+ d.links.forEach(l=>{nb[l.source].push([l.target,l.kind]);nb[l.target].push([l.source,l.kind])});
+ $("dl").innerHTML=d.nodes.map(n=>`<option value="${n.label}">`).join("");
+ G=ForceGraph3D()($("g")).graphData(d).backgroundColor("#0a0a0a")
+  .nodeColor(n=>pathSet.has(n.id)?"#ffffff":(n.type==="section"?SEC[n.act]:COL[n.type]))
+  .nodeVal(n=>n.type==="act"?160:n.type==="theme"?30:n.val).nodeLabel(n=>n.label).nodeOpacity(.9)
+  .nodeThreeObjectExtend(true)
+  .nodeThreeObject(n=>{if(n.type==="section")return null;
+    const t=new SpriteText(n.type==="act"?n.id:n.label);t.color=n.type==="act"?"#ffd9a0":"#9cc4ff";
+    t.textHeight=n.type==="act"?14:7;t.position.y=n.type==="act"?16:9;return t})
+  .linkColor(l=>pathLinks.has(l)?"#fff":LC[l.kind]).linkOpacity(.35)
+  .linkWidth(l=>pathLinks.has(l)?3:0).linkVisibility(visible)
+  .onNodeClick(show);
+ G.d3Force("charge").strength(n=>n.type==="section"?-45:-200);
+ G.d3Force("link").distance(l=>l.kind==="in_act"?110:l.kind==="theme"?90:45);
+ G.onEngineStop(()=>{if(!window._fit){window._fit=1;G.zoomToFit(900,60)}});
+});
+function visible(l){
+ if(l.kind!=="in_act"&&!$("k_"+l.kind).checked)return false;
+ const f=$("actf").value;if(!f)return true;
+ for(const n of [byId[lid(l.source)],byId[lid(l.target)]]){
+  if(n.type==="section"&&n.act!==f)return false;
+  if(n.type==="act"&&n.id!==f)return false}
+ return true}
+function refresh(){G.linkVisibility(visible)}
+["k_refers_to","k_similar","k_theme","actf"].forEach(i=>$(i).onchange=refresh);
+const norm=x=>x.toLowerCase().replace(/[§\s:]+/g,"");
+function find(s){const k=norm(s);if(!k)return null;
+ return data.nodes.find(n=>norm(n.label)===k)||data.nodes.find(n=>norm(n.label).includes(k))}
+function show(n){
+ G.cameraPosition({x:n.x*1.3+20,y:n.y*1.3+20,z:n.z*1.3+60},n,900);
+ let h=`<h3>${n.label}</h3>`;
+ if(n.type==="section")h+=`<div class="en">${n.en}</div><div class="hi">${n.hi}</div>`;
+ const rel={};(nb[n.id]||[]).forEach(([id,k])=>{if(k!=="in_act")(rel[k]=rel[k]||[]).push(id)});
+ const names={refers_to:"Connected by reference",similar:"Similar sections",theme:"Themes / sections"};
+ for(const k in rel){h+=`<p><b>${names[k]}</b> (${rel[k].length})</p>`+rel[k].slice(0,60).map(id=>`<a onclick="show(byId['${id}'])">${byId[id].label}</a>`).join("")}
+ $("panel").innerHTML=h;$("panel").style.display="block"}
+$("q").onchange=()=>{const n=find($("q").value);if(n)show(n);else $("msg").textContent="Not found"};
+$("go").onclick=()=>{const a=find($("from").value),b=find($("to").value);
+ if(!a||!b){$("msg").textContent="Enter two valid nodes, e.g. BNS §103 and BNSS §100";return}
+ const prev={[a.id]:null},q=[a.id];
+ while(q.length){const c=q.shift();if(c===b.id)break;
+  for(const[x]of nb[c]){if(byId[x].type!=="act"&&!(x in prev)){prev[x]=c;q.push(x)}}}
+ if(!(b.id in prev)){$("msg").textContent="No path";return}
+ const p=[];for(let c=b.id;c!==null;c=prev[c])p.unshift(c);
+ pathSet=new Set(p);pathLinks=new Set(data.links.filter(l=>{
+  const s=lid(l.source),t=lid(l.target);const i=p.indexOf(s),j=p.indexOf(t);return i>=0&&j>=0&&Math.abs(i-j)===1}));
+ G.nodeColor(G.nodeColor()).linkColor(G.linkColor()).linkWidth(G.linkWidth());
+ $("msg").textContent="Path: "+p.map(x=>byId[x].label).join(" → ")};
+$("reset").onclick=()=>{pathSet=new Set();pathLinks=new Set();$("panel").style.display="none";$("msg").textContent="";
+ G.nodeColor(G.nodeColor()).linkColor(G.linkColor()).linkWidth(G.linkWidth());G.zoomToFit(800)};
+</script></body></html>
