@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RegulationQA Explorer</title>
+<meta name="description" content="3D explorer of the RegulationQA corpus and retrieval outputs from 'Adaptive Span Extraction with Hybrid Retrieval for Regulatory Question Answering' (CODS 2026).">
+<style>
+/* VOICE: a lab instrument; dark, quiet, the data glows.
+   IDEA: the corpus as a constellation: passages are stars, instruments are suns, questions orbit the passage that answered them.
+   PICTURE: the full-screen 3D graph itself.
+   COLOUR and TYPE: near-black ground; orange instruments, red Indian law, green Indian guidance, blue GDPR, white standards, violet questions; system UI type.
+   LAYOUT: one-line toolbar on top, legend bottom-left, inspector panel on the right when something is selected. */
+:root{color-scheme:dark;--bg:#0a0a0a;--bar:#000;--ink:#e8e8e8;--mute:#9a9a9a;--line:#2a2a2a;--field:#151515;--acc:#f29e38}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+#bar{position:fixed;inset:0 0 auto 0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:9px 10px;background:var(--bar);border-top:3px solid #222}
+#live{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid #1c1c1c;padding-top:8px}#live .lab{font-weight:800;color:#ffd84a;font-size:13px}#lq{flex:1 1 360px;width:auto}#live button[type=submit]{background:#ffd84a;color:#111;border-color:#ffd84a}.chip{height:28px;font-size:12px;font-weight:500;border-radius:99px;color:var(--mute)}
+.stgs{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}.stg{height:26px;font-size:11.5px;padding:0 8px;border-radius:99px}.stg.on{background:#ffd84a;color:#111;border-color:#ffd84a}.stg:disabled{opacity:.35;cursor:default}
+#panel table{width:100%;border-collapse:collapse;font-size:12.5px}#panel th,#panel td{text-align:left;padding:3px 4px;border-bottom:1px solid #1f1f1f;vertical-align:top}#panel td .lnk{border:0;padding:0}#panel .r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}b.y{color:#ffd84a}b.c{color:#4fd1ff}.small{font-size:12px}
+#bar h1{font-size:16px;margin:0 6px 0 0;color:var(--acc);font-weight:800;white-space:nowrap}
+#bar h1 a{color:inherit;text-decoration:none}
+input[type=text],select{height:32px;font:13px system-ui,sans-serif;color:var(--ink);background:var(--field);border:1px solid #3a3a3a;border-radius:4px;padding:0 9px}
+input[type=text]{width:190px}#from,#to{width:150px}
+button{height:32px;font:600 13px system-ui,sans-serif;color:var(--ink);background:var(--field);border:1px solid #4a4a4a;border-radius:4px;padding:0 10px;cursor:pointer}
+button:hover{border-color:#888}
+:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+label.ck{display:inline-flex;align-items:center;gap:5px;font-size:13px;white-space:nowrap;cursor:pointer}
+label.ck input{accent-color:#3e8ef7;width:15px;height:15px;margin:0}
+#status{font-size:12.5px;color:var(--mute);margin-left:auto;white-space:nowrap}
+#graph{position:fixed;inset:0}
+#legend{position:fixed;left:10px;bottom:10px;z-index:4;background:rgba(10,10,10,.88);border:1px solid #1d1d1d;border-radius:6px;padding:8px 10px;font-size:12.5px}
+#legend summary{cursor:pointer;font-weight:700;color:var(--mute)}#legend div{display:flex;align-items:center;gap:7px;line-height:1.6}
+#legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+#legend .ln i{width:16px;height:2px;border-radius:0}
+#panel{position:fixed;right:10px;top:var(--top,104px);bottom:10px;width:min(400px,calc(100vw - 20px));z-index:4;background:rgba(14,14,14,.96);border:1px solid #2a2a2a;border-radius:8px;overflow:auto;padding:14px 16px;display:none}
+#panel.on{display:block}
+#panel h2{font-size:17px;line-height:1.3;margin:2px 0 8px}
+#panel h3{font-size:12.5px;color:var(--mute);margin:14px 0 6px;font-weight:700}
+#panel .x{position:sticky;top:0;float:right;height:28px;padding:0 9px}
+.kind{font-size:12px;font-weight:700;letter-spacing:0;color:var(--mute)}
+.txt{font-family:Georgia,"Times New Roman",serif;font-size:14.5px;line-height:1.55;color:#d8d8d8;max-height:260px;overflow:auto;padding-right:4px;position:relative}
+.box{border:1px solid #2c2c2c;border-radius:6px;padding:8px 10px;margin:6px 0;background:#121212}
+.box.hl{border-color:#ffd84a}
+mark{background:#ffd84a;color:#111}
+.row{display:flex;justify-content:space-between;gap:4px 10px;flex-wrap:wrap}
+.n{font-variant-numeric:tabular-nums;color:var(--mute);white-space:nowrap}
+.lnk{all:unset;cursor:pointer;color:#cfe0ff;display:block;padding:4px 0;border-bottom:1px solid #1f1f1f;font-size:13px}
+.lnk:hover{color:#fff}.lnk:focus-visible{outline:2px solid var(--acc)}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:99px;border:1px solid #444;margin:0 4px 4px 0}
+.good{color:#6fd1a6}.bad{color:#f19a9a}
+#help{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:3;font-size:12.5px;color:var(--mute);background:rgba(10,10,10,.8);padding:5px 10px;border-radius:5px;white-space:nowrap}
+#err{position:fixed;inset:0;display:none;place-items:center;z-index:9;text-align:center;padding:24px}
+@media(max-width:700px){#ex{display:none}#bar{gap:6px}input[type=text]{width:100%}#from,#to{width:calc(50% - 4px)}#status,#help{display:none}#panel{top:auto;height:55vh;left:10px;width:auto}#legend{font-size:11.5px}}
+</style>
+</head>
+<body>
+<div id="bar">
+ <h1><a href="https://github.com/sauraviitj/RegulationQA_dataset" title="Code and dataset">RegulationQA Explorer</a></h1>
+ <input type="text" id="q" list="names" placeholder="Search e.g. GDPR 12, breach, consent" aria-label="Search">
+ <select id="inst" aria-label="Instrument"><option value="">All instruments</option></select>
+ <label class="ck"><input type="checkbox" id="cWin" checked>window</label>
+ <label class="ck"><input type="checkbox" id="cSim" checked>similar</label>
+ <label class="ck"><input type="checkbox" id="cQ" checked>questions</label>
+ <input type="text" id="from" list="names" placeholder="path from" aria-label="Path from">
+ <input type="text" id="to" list="names" placeholder="to" aria-label="Path to">
+ <button id="go" type="button">Find path</button>
+ <button id="reset" type="button">Reset</button>
+ <span id="status">Loading…</span>
+ <form id="live"><span class="lab">Live query</span><input type="text" id="lq" placeholder="Type a compliance question, e.g. Within how many hours must cyber incidents be reported?" aria-label="Live query"><button type="submit">Run pipeline</button><span id="ex"></span></form>
+</div>
+<datalist id="names"></datalist>
+<div id="graph"></div>
+<details id="legend" open><summary>Legend</summary>
+ <div><i style="background:#f29e38"></i>Instrument</div>
+ <div><i style="background:#e5484d"></i>Indian statute / rules passage</div>
+ <div><i style="background:#30a46c"></i>Indian guideline / direction passage</div>
+ <div><i style="background:#3e8ef7"></i>GDPR passage</div>
+ <div><i style="background:#d9d9d9"></i>International standard passage</div>
+ <div><i style="background:#a78bfa"></i>Question (to its top-1 passage)</div>
+ <div class="ln"><i style="background:#8a8a8a"></i>±1 window neighbour</div>
+ <div class="ln"><i style="background:#f29e38"></i>BGE similarity ≥ 0.80</div>
+ <div class="ln"><i style="background:#555"></i>Instrument / source links show on selection</div>
+</details>
+<aside id="panel" aria-live="polite"></aside>
+<div id="help">Drag to rotate · scroll to zoom · click a node to inspect · or type a question in Live query</div>
+<div id="err"><div><p>The explorer needs WebGL and <code>graph.json</code> served next to this page.</p><p class="n">If you opened the file from disk, run <code>python -m http.server</code> in this folder.</p></div></div>
+<script src="3d-force-graph.min.js"></script>
+<script src="pipeline.js"></script>
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const COL={act:'#f29e38','in-law':'#e5484d','in-guide':'#30a46c',eu:'#3e8ef7',intl:'#d9d9d9',q:'#a78bfa'};
+const LCOL={part:'rgba(140,140,140,0.18)',win:'rgba(170,170,170,0.55)',sim:'rgba(242,158,56,0.55)',ans:'rgba(167,139,250,0.35)',src:'rgba(242,158,56,0.25)'};
+let ALL=null,byId=new Map(),adj=new Map(),G=null,hiN=new Set(),hiL=new Set(),sel=null;
+const sid=x=>typeof x==='object'?x.id:x;
+
+function label(n){return n.t==='q'?`Q${n.id.slice(2)}: ${n.name}`:n.name}
+function color(n){
+ if(LIVE)return lc(n);
+ if(hiN.size&&!hiN.has(n.id))return '#262626';
+ if(n.t==='act')return COL.act;if(n.t==='q')return COL.q;return COL[n.g];
+}
+function lcolor(l){
+ if(LIVE)return llc(l);
+ if(hiN.size){return hiL.has(l)?(l.k==='sim'||l.k==='src'?'#ffb45c':l.k==='ans'?'#c9b6ff':'#ffffff'):'rgba(60,60,60,0.12)'}
+ return LCOL[l.k];
+}
+function visible(){
+ const inst=$('#inst').value,w=$('#cWin').checked,s=$('#cSim').checked,qq=$('#cQ').checked;
+ const keepP=new Set(ALL.nodes.filter(n=>n.t==='psg'&&(!inst||n.doc===inst)).map(n=>n.id));
+ const nodes=ALL.nodes.filter(n=>n.t==='psg'?keepP.has(n.id):n.t==='act'?(!inst||n.name===inst):qq&&n.t==='q'&&(!inst||ALL.ansOf.get(n.id)&&keepP.has(ALL.ansOf.get(n.id))));
+ const ids=new Set(nodes.map(n=>n.id));
+ const links=ALL.links.filter(l=>ids.has(sid(l.source))&&ids.has(sid(l.target))&&(l.k!=='win'||w)&&(l.k!=='sim'||s));
+ return {nodes,links};
+}
+function rebuildAdj(d){adj=new Map();d.nodes.forEach(n=>adj.set(n.id,[]));d.links.forEach(l=>{const a=sid(l.source),b=sid(l.target);adj.get(a).push([b,l]);adj.get(b).push([a,l])})}
+function refresh(){const d=visible();G.graphData(d);rebuildAdj(d);$('#status').textContent=`${d.nodes.length.toLocaleString()} nodes · ${d.links.length.toLocaleString()} links`}
+function paint(){G.nodeColor(G.nodeColor()).linkColor(G.linkColor()).linkWidth(G.linkWidth()).linkVisibility(G.linkVisibility())}
+function clearHi(){hiN.clear();hiL.clear()}
+
+function focus(n){
+ if(n.x===undefined)return;
+ const dist=n.t==='act'?320:220,r=1+dist/Math.hypot(n.x||1,n.y||1,n.z||1);
+ G.cameraPosition({x:n.x*r,y:n.y*r,z:n.z*r},n,900);
+}
+function linkBtn(id,text,extra=''){return `<button class="lnk" data-go="${esc(id)}"><span class="row"><span>${esc(text)}</span><span class="n">${esc(extra)}</span></span></button>`}
+function markSpan(text,span){const k=span.slice(0,90);let i=text.indexOf(span),L=span.length;if(i<0){i=text.indexOf(k);L=Math.min(span.length,text.length-i)}
+ return i<0?esc(text):esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+L))+'</mark>'+esc(text.slice(i+L))}
+
+function select(n,move=true){
+ sel=n;clearHi();hiN.add(n.id);
+ (adj.get(n.id)||[]).forEach(([o,l])=>{hiN.add(o);hiL.add(l)});
+ const P=$('#panel');let h=`<button class="x" id="close" type="button" aria-label="Close">✕</button>`;
+ if(n.t==='psg'){
+  const nb=ALL.adjAll.get(n.id)||[];
+  const win=nb.filter(([,l])=>l.k==='win').map(([o])=>byId.get(o)).sort((a,b)=>a.ci-b.ci);
+  const sim=nb.filter(([,l])=>l.k==='sim').map(([o,l])=>[byId.get(o),l.w]).sort((a,b)=>b[1]-a[1]);
+  const qs=nb.filter(([,l])=>l.k==='ans').map(([o])=>byId.get(o));
+  h+=`<div class="kind">Passage · ${esc(n.doc)}</div><h2>${esc(n.name)}</h2><div class="txt">${esc(n.text)}</div>
+  <h3>±1 window (what the pipeline reads around this passage)</h3>${win.map(w=>linkBtn(w.id,'Passage '+w.ci,w.ci<n.ci?'previous':'next')).join('')||'<p class="n">No neighbours.</p>'}
+  <h3>Similar passages (BGE cosine, outside the window)</h3>${sim.map(([o,w])=>linkBtn(o.id,o.name,w.toFixed(3))).join('')||'<p class="n">None above 0.80.</p>'}
+  <h3>Questions answered from this passage (top-1 span)</h3>${qs.map(q=>linkBtn(q.id,q.name,'F1 '+q.f.toFixed(2))).join('')||'<p class="n">None.</p>'}`;
+ }else if(n.t==='q'){
+  const top=ALL.ansOf.get(n.id),tp=top&&byId.get(top);
+  n.c.forEach(c=>{if(c.p!=null)hiN.add('P:'+c.p)});
+  const srcs=n.src==='CROSS'?(n.parts.length?n.parts:['Cross-document']):[n.src];
+  h+=`<div class="kind">Question ${esc(n.id.slice(2))}</div><h2>${esc(n.name)}</h2>
+  <div>${n.src==='CROSS'?'<span class="pill">Cross-document</span>':''}${srcs.map(s=>`<span class="pill">${esc(s)}</span>`).join('')}</div>
+  <p><button type="button" id="runq">Run this question live</button></p><h3>Reference answer</h3><div class="box txt">${esc(n.gold)}</div>
+  <h3>Returned span · ${esc(n.sd)} · token F1 <span class="${n.f>=.5?'good':n.f<.2?'bad':''}">${n.f.toFixed(3)}</span></h3><div class="box hl txt">${esc(n.span)}</div>
+  ${tp?`<h3>Inside its passage</h3><div class="box txt">${markSpan(tp.text,n.span)}</div>`:''}
+  <h3>Top 5 candidates after fusion and sentence scoring (highlighted in the graph)</h3>
+  ${n.c.map((c,i)=>c.p!=null?linkBtn('P:'+c.p,`${i+1}. ${byId.get('P:'+c.p).name}`,`CE ${c.ce.toFixed(2)}`):`<p class="n">${i+1}. ${esc(c.d)} · CE ${c.ce.toFixed(2)}</p>`).join('')}`;
+ }else{
+  const ps=ALL.nodes.filter(x=>x.t==='psg'&&x.doc===n.name);
+  const qs=ALL.nodes.filter(x=>x.t==='q'&&(x.src===n.name||x.parts.includes(n.name)));
+  const single=qs.filter(x=>x.src===n.name),mf=single.length?single.reduce((a,x)=>a+x.f,0)/single.length:null;
+  const hits=qs.filter(x=>x.sd===n.name).length;
+  const cross=new Map();ps.forEach(p=>(ALL.adjAll.get(p.id)||[]).forEach(([o,l])=>{if(l.k==='sim'&&l.x){const d=byId.get(o).doc;cross.set(d,(cross.get(d)||0)+1)}}));
+  ps.forEach(p=>hiN.add(p.id));
+  h+=`<div class="kind">Instrument</div><h2>${esc(n.name)}</h2>
+  <div class="row"><span>Passages</span><span class="n">${ps.length}</span></div>
+  <div class="row"><span>Questions citing it</span><span class="n">${qs.length} (${single.length} single-source)</span></div>
+  <div class="row"><span>Mean top-1 F1, single-source</span><span class="n">${mf==null?'–':mf.toFixed(3)}</span></div>
+  <div class="row"><span>Of those, top-1 span from this instrument</span><span class="n">${qs.length?hits+' / '+qs.length:'–'}</span></div>
+  <h3>Most similar other instruments (cross-instrument BGE links)</h3>${[...cross].sort((a,b)=>b[1]-a[1]).map(([d,c])=>linkBtn('D:'+d,d,c+' links')).join('')||'<p class="n">No cross-instrument links above 0.80.</p>'}
+  <h3>Questions</h3>${qs.slice(0,60).map(q=>linkBtn(q.id,q.name,'F1 '+q.f.toFixed(2))).join('')}${qs.length>60?`<p class="n">+${qs.length-60} more</p>`:''}`;
+ }
+ P.innerHTML=h;P.classList.add('on');P.scrollTop=0;P.querySelectorAll('.txt mark').forEach(m=>{const t=m.closest('.txt');t.scrollTop=m.offsetTop-40});
+ $('#close').onclick=reset;const rq=$('#runq');if(rq)rq.onclick=()=>{$('#lq').value=n.name;runLive(n.name)};
+ paint();if(move)focus(n);
+}
+function reset(){if(LIVE){pause();LIVE=null;setLiveGraph(false);G.nodeVal(baseVal)}sel=null;clearHi();$('#panel').classList.remove('on');paint()}
+function resolve(v){
+ v=v.trim();if(!v)return null;const lv=v.toLowerCase();
+ const exact=ALL.nodes.find(n=>label(n).toLowerCase()===lv);if(exact)return exact;
+ const m=lv.match(/^(.*?)\s*(?:·\s*passage\s*|\s)(\d+)$/);
+ if(m){const p=ALL.nodes.find(n=>n.t==='psg'&&n.doc.toLowerCase().startsWith(m[1].trim())&&n.ci===+m[2]);if(p)return p}
+ const qm=lv.match(/^q\s*(\d+)$/);if(qm)return byId.get('Q:'+qm[1]);
+ return ALL.nodes.find(n=>n.t==='act'&&n.name.toLowerCase().includes(lv))||ALL.nodes.find(n=>n.t==='q'&&n.name.toLowerCase().includes(lv))||ALL.nodes.find(n=>n.t==='psg'&&n.text.toLowerCase().includes(lv));
+}
+function ensureVisible(n){
+ const inst=$('#inst').value;
+ if(n.t==='q'&&!$('#cQ').checked){$('#cQ').checked=true;refresh()}
+ const doc=n.t==='psg'?n.doc:n.t==='act'?n.name:null;
+ if(inst&&(n.t==='q'||doc!==inst)){$('#inst').value='';refresh()}
+}
+function go(n){if(!n){$('#status').textContent='No match';return}ensureVisible(n);setTimeout(()=>select(byId.get(n.id)),G.graphData().nodes.includes(n)&&n.x!==undefined?0:1200)}
+function findPath(){
+ const a=resolve($('#from').value),b=resolve($('#to').value);
+ if(!a||!b){$('#status').textContent='Pick both ends from the suggestions';return}
+ ensureVisible(a);ensureVisible(b);
+ const prev=new Map([[a.id,null]]),Qu=[a.id];
+ while(Qu.length){const u=Qu.shift();if(u===b.id)break;for(const [v,l] of adj.get(u)||[])if(!prev.has(v)){prev.set(v,[u,l]);Qu.push(v)}}
+ if(!prev.has(b.id)){$('#status').textContent='No path with the current filters';return}
+ clearHi();sel=null;const steps=[];let c=b.id;
+ while(c){hiN.add(c);steps.unshift(c);const p=prev.get(c);if(!p)break;hiL.add(p[1]);c=p[0]}
+ const kinds={part:'belongs to',win:'window',sim:'similar',ans:'answered by',src:'source instrument'};
+ const P=$('#panel');P.innerHTML=`<button class="x" id="close" type="button" aria-label="Close">✕</button><div class="kind">Path · ${steps.length-1} hops</div><h2>${esc(label(a))} → ${esc(label(b))}</h2>`+
+  steps.map((id,i)=>{const n=byId.get(id);let via='';if(i>0){const l=prev.get(id)[1];via=kinds[l.k]+(l.w?' '+l.w.toFixed(2):'')}return linkBtn(id,label(n),via)}).join('');
+ P.classList.add('on');$('#close').onclick=reset;paint();
+ $('#status').textContent=`Path found: ${steps.length-1} hops`;
+}
+
+/* ---------------- live query: run the pipeline in the browser and replay it on the graph ---------------- */
+const STAGES=[['bm25','BM25'],['dense','BGE'],['fusion','RRF pool'],['window','±1 window'],['score','Cross-encoder'],['answer','Answer span']];
+let PIPE=null,MODELS=null,modelsP=null,LIVE=null,liveTimer=null;
+function lc(n){                        // colour of a node while a live query is shown
+ const L=LIVE,T=L.T,st=L.stage,id=n.id;
+ if(n.t==='query')return '#ffffff';
+ if(n.t!=='psg')return '#1c1c1c';
+ const i=+id.slice(2);
+ if(st==='bm25')return T.bmSet.has(i)?'#ffd84a':'#202020';
+ if(st==='dense'){const a=T.bmSet.has(i),b=T.dnSet.has(i);return a&&b?'#ffffff':a?'#ffd84a':b?'#4fd1ff':'#202020'}
+ if(st==='fusion')return T.poolSet.has(i)?'#ffffff':(T.bmSet.has(i)||T.dnSet.has(i))?'#3a3a3a':'#1c1c1c';
+ if(st==='window')return T.poolSet.has(i)?'#ffffff':T.winSet.has(i)?'#8fb3c9':'#1c1c1c';
+ if(st==='score'){const c=T.ceOf.get(i);if(!c)return T.winSet.has(i)?'#2f3a40':'#1c1c1c';const t=c.ceRank<=1?1:1-(c.ceRank-1)/19;return `hsl(${Math.round(10+40*t)},90%,${Math.round(38+22*t)}%)`}
+ if(st==='answer'){if(i===T.answer.from)return '#ffd84a';if(T.answer.window.includes(i))return '#8fb3c9';return T.poolSet.has(i)?'#555':'#1c1c1c'}
+ return '#1c1c1c';
+}
+function lv(n){
+ if(n.t==='query')return 18;
+ if(n.t!=='psg')return n.t==='act'?20:0.35;
+ const T=LIVE.T,st=LIVE.stage,i=+n.id.slice(2);
+ if(st==='fusion'||st==='window'){const r=T.poolRank.get(i);return r?6-r*0.2:1.2}
+ if(st==='score'){const c=T.ceOf.get(i);return c?Math.max(1.5,9-c.ceRank*0.35):1.2}
+ if(st==='answer')return i===T.answer.from?14:T.poolSet.has(i)?2.5:1.2;
+ return (st==='bm25'&&T.bmSet.has(i))||(st==='dense'&&(T.bmSet.has(i)||T.dnSet.has(i)))?2.2:1.2;
+}
+function llc(l){
+ if(l.k==='qry'){const i=+sid(l.target).slice(2),st=LIVE.stage;
+  if(st==='answer')return i===LIVE.T.answer.i?'#ffd84a':'rgba(120,120,120,0.15)';
+  if(st==='score'){const c=LIVE.T.ceOf.get(i);return c&&c.ceRank<=3?'rgba(255,216,74,0.9)':'rgba(200,200,200,0.25)'}
+  return 'rgba(255,255,255,0.55)'}
+ if(l.k==='win'&&(LIVE.stage==='window'||LIVE.stage==='answer')){const a=+sid(l.source).slice(2),b=+sid(l.target).slice(2);
+  const W=LIVE.stage==='answer'?new Set(LIVE.T.answer.window):LIVE.T.winSet;if(W.has(a)&&W.has(b)&&(LIVE.T.poolSet.has(a)||LIVE.T.poolSet.has(b)||LIVE.stage==='answer'))return '#9fd3f0'}
+ return 'rgba(50,50,50,0.08)';
+}
+function lw(l){if(l.k==='qry')return LIVE.stage==='answer'&&+sid(l.target).slice(2)===LIVE.T.answer.i?2.5:0.6;
+ if(l.k==='win'&&llc(l)==='#9fd3f0')return 1.4;return 0}
+
+async function getModels(prog){
+ if(MODELS)return MODELS;
+ if(window.MOCK_MODELS)return window.MOCK_MODELS;   // test hook
+ if(!modelsP)modelsP=(async()=>{
+  const TJ=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/dist/transformers.min.js');
+  TJ.env.allowLocalModels=false;
+  const files=new Map();const cb=e=>{if(e.status==='progress'&&e.total){files.set(e.file,[e.loaded,e.total]);let a=0,b=0;for(const[x,y]of files.values()){a+=x;b+=y}prog(a,b)}};
+  const emb=await TJ.pipeline('feature-extraction','Xenova/bge-base-en-v1.5',{dtype:'q8',progress_callback:cb});
+  const tok=await TJ.AutoTokenizer.from_pretrained('Xenova/ms-marco-MiniLM-L-6-v2',{progress_callback:cb});
+  const ce=await TJ.AutoModelForSequenceClassification.from_pretrained('Xenova/ms-marco-MiniLM-L-6-v2',{dtype:'q8',progress_callback:cb});
+  MODELS={
+   embed:async q=>(await emb(q,{pooling:'cls',normalize:true})).data,
+   score:async(q,ss)=>{const out=[];for(let i=0;i<ss.length;i+=24){const b=ss.slice(i,i+24);
+     const inp=tok(new Array(b.length).fill(q),{text_pair:b,padding:true,truncation:true,max_length:512});
+     const {logits}=await ce(inp);out.push(...Array.from(logits.data));liveMsg(`Cross-encoder: ${Math.min(ss.length,i+24)} / ${ss.length} sentences`);
+     await new Promise(r=>setTimeout(r,0))}return out}};
+  return MODELS})();
+ try{return await modelsP}catch(e){modelsP=null;throw e}
+}
+function liveMsg(t){const m=$('#lmsg');if(m)m.textContent=t}
+function setLiveGraph(on){
+ const d=G.graphData();
+ if(on){
+  const pool=LIVE.T.pool.map(c=>byId.get('P:'+c.i)).filter(n=>n.x!==undefined);
+  const cx=pool.reduce((a,n)=>a+n.x,0)/pool.length,cy=pool.reduce((a,n)=>a+n.y,0)/pool.length,cz=pool.reduce((a,n)=>a+n.z,0)/pool.length;
+  const qn={id:'QUERY',t:'query',name:LIVE.T.query,x:cx,y:cy+40,z:cz,fx:cx,fy:cy+40,fz:cz};
+  G.graphData({nodes:[...d.nodes.filter(n=>n.id!=='QUERY'),qn],links:[...d.links.filter(l=>l.k!=='qry'),...pool.map(n=>({source:'QUERY',target:n.id,k:'qry'}))]});
+ }else if(d.nodes.some(n=>n.id==='QUERY'))G.graphData({nodes:d.nodes.filter(n=>n.id!=='QUERY'),links:d.links.filter(l=>l.k!=='qry')});
+}
+function liveFit(){
+ const st=LIVE.stage,T=LIVE.T;
+ if(st==='bm25'||st==='dense'){G.zoomToFit(900,40,n=>n.t==='psg');return}
+ if(st==='answer'){const W=new Set(T.answer.window);G.zoomToFit(900,120,n=>n.id==='QUERY'||(n.t==='psg'&&W.has(+n.id.slice(2))));return}
+ const S=st==='window'?T.winSet:T.poolSet;G.zoomToFit(900,60,n=>n.id==='QUERY'||(n.t==='psg'&&S.has(+n.id.slice(2))));
+}
+function pname(i){return byId.get('P:'+i).name}
+function stageHTML(){
+ const T=LIVE.T,st=LIVE.stage,k=STAGES.findIndex(s=>s[0]===st);
+ const tabs=STAGES.map(([s,l],j)=>`<button type="button" class="stg${s===st?' on':''}" data-stage="${s}" ${LIVE.ready.has(s)?'':'disabled'}>${j+1}. ${l}</button>`).join('');
+ let b='';
+ const list=(arr,f)=>arr.slice(0,8).map(f).join('');
+ if(st==='bm25')b=`<p>BM25 scores all 766 passages on word overlap with the query (lowercased, punctuation stripped). The top 100 light up <b class="y">yellow</b>.</p>${list(T.bm25,(x,r)=>linkBtn('P:'+x.i,`${r+1}. ${pname(x.i)}`,x.s.toFixed(2)))}`;
+ if(st==='dense')b=T.dense.length?`<p>BGE-base embeds the query and takes the 100 passages with the highest inner product: <b class="c">blue</b> = BGE only, <b class="y">yellow</b> = BM25 only, <b>white</b> = both (${T.both} passages).</p>${list(T.dense,(x,r)=>linkBtn('P:'+x.i,`${r+1}. ${pname(x.i)}`,x.s.toFixed(3)))}`:`<p class="bad">The BGE model could not load here, so this run uses BM25 alone.</p>`;
+ if(st==='fusion')b=`<p>Reciprocal Rank Fusion adds 1/(60 + rank) from each list, so passages ranked well by both rise. The top 20 become the candidate pool, linked to the query node.</p><table><tr><th>#</th><th>Passage</th><th class="r">BM25</th><th class="r">BGE</th><th class="r">RRF</th></tr>${T.pool.map((c,r)=>`<tr><td>${r+1}</td><td>${linkBtn('P:'+c.i,pname(c.i))}</td><td class="r">${T.bmRank.get(c.i)||'–'}</td><td class="r">${T.denseRank.get(c.i)||'–'}</td><td class="r">${c.s.toFixed(4)}</td></tr>`).join('')}</table>`;
+ if(st==='window')b=`<p>Each candidate is read together with the passage before and after it in the same document (<b style="color:#8fb3c9">light blue</b>), so a sentence cut at a chunk boundary is still complete. ${T.winSet.size} distinct passages are in play.</p>`;
+ if(st==='score')b=T.ranked?`<p>The MiniLM cross-encoder scored ${T.scored} distinct sentences against the query. Each candidate is re-ranked by its best own sentence; brighter and larger means a higher score.</p><table><tr><th>#</th><th>Passage</th><th class="r">CE</th><th class="r">RRF #</th></tr>${T.ranked.map(c=>`<tr><td>${c.ceRank}</td><td>${linkBtn('P:'+c.i,pname(c.i))}</td><td class="r">${c.ce.toFixed(2)}</td><td class="r">${c.rrfRank}${c.rrfRank>c.ceRank?' <span class="good">↑</span>':c.rrfRank<c.ceRank?' <span class="bad">↓</span>':''}</td></tr>`).join('')}</table>`:'';
+ if(st==='answer'&&T.answer){const A=T.answer,src=byId.get('P:'+A.from),g=LIVE.gold;
+  b=`<p>The best-scoring sentence in the top candidate's window is returned: ${A.words} words from ${A.nWin} window sentences (cross-encoder ${A.ce.toFixed(2)}).</p>
+  <div class="box hl txt">${esc(A.span)}</div>
+  ${g?`<h3>Reference answer (RegulationQA)</h3><div class="box txt">${esc(g.gold)}</div><div class="row"><span>Token F1, this live run</span><span class="n">${f1(A.span,g.gold).toFixed(3)}</span></div><div class="row"><span>Token F1, released run</span><span class="n">${g.f.toFixed(3)}</span></div>`:''}
+  <h3>In context · ${esc(src.name)}</h3><div class="box txt">${markSpan(src.text,A.span)}</div>`}
+ return `<button class="x" id="close" type="button" aria-label="Close">✕</button><div class="kind">Live query</div><h2>${esc(T.query)}</h2>
+  <div class="stgs">${tabs}</div><div class="row" style="margin:6px 0 2px"><span id="lmsg" class="n">${esc(LIVE.msg||'')}</span><span><button type="button" id="lprev">◀</button> <button type="button" id="lplay">${liveTimer?'Pause':'Play'}</button> <button type="button" id="lnext">▶</button></span></div>${b}
+  <p class="n small">Re-implemented in your browser (quantised models, Intl sentence splitter), so results can differ slightly from the released Python run.</p>`;
+}
+function f1(p,g){const P=p.toLowerCase().split(/\s+/).filter(Boolean),Gt=g.toLowerCase().split(/\s+/).filter(Boolean),c=[...new Set(P)].filter(w=>new Set(Gt).has(w)).length;if(!c)return 0;const pr=c/P.length,rc=c/Gt.length;return 2*pr*rc/(pr+rc)}
+function showStage(st,fit=true){
+ LIVE.stage=st;clearHi();sel=null;
+ if(['fusion','window','score','answer'].includes(st))setLiveGraph(true);
+ const P=$('#panel');P.innerHTML=stageHTML();P.classList.add('on');
+ P.querySelectorAll('.txt mark').forEach(m=>{const t=m.closest('.txt');t.scrollTop=m.offsetTop-40});
+ $('#close').onclick=()=>stopLive(true);
+ $('#lprev').onclick=()=>step(-1);$('#lnext').onclick=()=>step(1);$('#lplay').onclick=()=>{liveTimer?pause():play()};
+ P.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{pause();showStage(b.dataset.stage)});
+ G.nodeColor(G.nodeColor()).nodeVal(G.nodeVal()).linkColor(G.linkColor()).linkWidth(G.linkWidth()).linkVisibility(G.linkVisibility());
+ if(fit)liveFit();
+}
+function step(d){const k=STAGES.findIndex(s=>s[0]===LIVE.stage)+d;if(k>=0&&k<STAGES.length&&LIVE.ready.has(STAGES[k][0]))showStage(STAGES[k][0]);else if(d>0&&k>=STAGES.length)pause()}
+function pause(){clearInterval(liveTimer);liveTimer=null;const b=$('#lplay');if(b)b.textContent='Play'}
+function play(){pause();liveTimer=setInterval(()=>{const k=STAGES.findIndex(s=>s[0]===LIVE.stage)+1;if(k>=STAGES.length){pause();return}if(LIVE.ready.has(STAGES[k][0]))showStage(STAGES[k][0])},2200);const b=$('#lplay');if(b)b.textContent='Pause'}
+function stopLive(close){pause();if(LIVE){LIVE=null;setLiveGraph(false)}
+ G.nodeVal(baseVal);if(close)reset();else paint()}
+async function runLive(query){
+ query=query.trim();if(!query||!PIPE)return;
+ if($('#inst').value){$('#inst').value='';refresh()}
+ stopLive(false);
+ const gold=ALL.nodes.find(n=>n.t==='q'&&n.name.toLowerCase()===query.toLowerCase());
+ LIVE={T:{query},stage:null,ready:new Set(),gold,msg:''};const me=LIVE;
+ const onStage=(s,T)=>{if(LIVE!==me)return;
+  T.bmSet=new Set(T.bm25.map(x=>x.i));T.dnSet=new Set((T.dense||[]).map(x=>x.i));T.both=[...T.bmSet].filter(i=>T.dnSet.has(i)).length;
+  if(T.pool){T.poolSet=new Set(T.pool.map(c=>c.i));T.poolRank=new Map(T.pool.map((c,r)=>[c.i,r+1]))}
+  if(T.windows)T.winSet=new Set(T.windows.flat());
+  if(T.cands)T.ceOf=new Map(T.cands.map(c=>[c.i,c]));
+  LIVE.T=T;LIVE.ready.add(s);
+  if(!LIVE.stage){showStage(s);play()}else if(!liveTimer&&s===STAGES[STAGES.findIndex(x=>x[0]===LIVE.stage)+1]?.[0])showStage(s);else{const P=$('#panel');P.querySelectorAll(`[data-stage="${s}"]`).forEach(b=>b.disabled=false)}};
+ G.nodeVal(n=>LIVE?lv(n):baseVal(n));
+ LIVE.msg='Loading models (about 135 MB on first run, cached afterwards)…';
+ const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),MODELS||window.MOCK_MODELS?1e9:45000));
+ let gotProgress=false;
+ const mp=Promise.race([getModels((a,b)=>{gotProgress=true;if(LIVE===me){LIVE.msg=`Loading models: ${(a/1e6).toFixed(0)} / ${(b/1e6).toFixed(0)} MB`;liveMsg(LIVE.msg)}}),
+   timeout.catch(e=>{if(gotProgress)return getModels(()=>{});throw e})])
+  .then(m=>{if(LIVE===me){LIVE.msg='Running…';liveMsg(LIVE.msg)}return m})
+  .catch(()=>{if(LIVE===me){LIVE.msg='Models could not be downloaded here, so only the BM25 stages run. On GitHub Pages they load from Hugging Face.';liveMsg(LIVE.msg)}return null});
+ try{await PIPE.run(query,{embed:async q=>{const m=await mp;return m&&!PIPE.noVectors?m.embed(q):null},score:async(q,ss)=>{const m=await mp;return m?m.score(q,ss):null},onStage});
+  const m=await mp;if(LIVE===me&&m){LIVE.msg=`Done · ${LIVE.T.scored} sentences scored`;liveMsg(LIVE.msg)}}
+ catch(e){console.error(e);if(LIVE===me){LIVE.msg='Run failed: '+e.message;if(LIVE.stage)liveMsg(LIVE.msg);else $('#status').textContent=LIVE.msg}}
+}
+
+const baseVal=n=>n.t==='act'?40:n.t==='q'?0.35:1.4;
+fetch('graph.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
+ ALL=d;d.nodes.forEach(n=>byId.set(n.id,n));
+ ALL.ansOf=new Map(d.links.filter(l=>l.k==='ans').map(l=>[l.source,l.target]));
+ ALL.adjAll=new Map();d.links.forEach(l=>{const a=l.source,b=l.target;(ALL.adjAll.get(a)||ALL.adjAll.set(a,[]).get(a)).push([b,l]);(ALL.adjAll.get(b)||ALL.adjAll.set(b,[]).get(b)).push([a,l])});
+ $('#inst').insertAdjacentHTML('beforeend',d.nodes.filter(n=>n.t==='act').map(n=>`<option value="${esc(n.name)}">${esc(n.name)}</option>`).join(''));
+ $('#names').innerHTML=d.nodes.filter(n=>n.t!=='q').map(n=>`<option value="${esc(label(n))}">`).join('')+d.nodes.filter(n=>n.t==='q').map(n=>`<option value="${esc(label(n))}">`).join('');
+ G=ForceGraph3D({controlType:'orbit'})($('#graph'))
+  .backgroundColor('#0a0a0a').showNavInfo(false)
+  .nodeId('id').nodeLabel(n=>`<div style="max-width:320px;font:12.5px system-ui;background:#111;padding:5px 8px;border:1px solid #333;border-radius:4px">${esc(label(n))}</div>`)
+  .nodeVal(baseVal).nodeRelSize(3.2).nodeOpacity(0.95).nodeResolution(10)
+  .nodeColor(color).linkColor(lcolor).linkOpacity(0.5)
+  .linkWidth(l=>LIVE?lw(l):hiL.has(l)?1.6:0).linkVisibility(l=>LIVE?(l.k==='qry'||l.k==='win'):(l.k!=='part'&&l.k!=='src')||hiL.has(l)||(l.k==='part'&&$('#inst').value!==''))
+  .onNodeClick(n=>{if(n.t!=='query')select(n)}).onBackgroundClick(reset)
+  .d3AlphaDecay(0.03).warmupTicks(60).cooldownTime(9000);
+ G.d3Force('link').distance(l=>l.k==='part'?50:l.k==='win'?14:l.k==='sim'?26:l.k==='src'?60:10).strength(l=>l.k==='part'?0.25:l.k==='src'?0.02:l.k==='ans'?0.6:0.5);
+ let gn=[];const pull=a=>{for(const n of gn){const k=0.035*a;n.vx-=n.x*k;n.vy-=n.y*k;n.vz-=n.z*k}};pull.initialize=ns=>{gn=ns};G.d3Force('pull',pull);
+ G.d3Force('charge').strength(-18);
+ let fitted=false;G.onEngineStop(()=>{G.graphData().nodes.forEach(n=>{n.fx=n.x;n.fy=n.y;n.fz=n.z});if(!fitted){fitted=true;G.zoomToFit(700,30)}});
+ const topFix=()=>document.documentElement.style.setProperty('--top',($('#bar').offsetHeight+8)+'px');topFix();addEventListener('resize',topFix);
+ const PS=d.nodes.filter(n=>n.t==='psg').map(n=>({id:n.id,doc:n.doc,ci:n.ci,text:n.text}));
+ fetch('vectors.f16').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(buf=>{PIPE=ADSIR.createPipeline(PS,ADSIR.f16ToF32(buf))}).catch(()=>{PIPE=ADSIR.createPipeline(PS,null);PIPE.noVectors=true});
+ const EX=[207,45,700].map(i=>byId.get('Q:'+i)).filter(Boolean);
+ $('#ex').innerHTML=EX.map(n=>`<button type="button" class="chip" data-q="${esc(n.name)}">${esc(n.name.length>44?n.name.slice(0,42)+'…':n.name)}</button>`).join('');
+ $('#ex').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(b){$('#lq').value=b.dataset.q;runLive(b.dataset.q)}});
+ $('#live').addEventListener('submit',e=>{e.preventDefault();runLive($('#lq').value)});
+ if(innerWidth<700)$('#legend').open=false;
+ refresh();
+ addEventListener('resize',()=>G.width(innerWidth).height(innerHeight));
+ ['#cWin','#cSim','#cQ','#inst'].forEach(s=>$(s).addEventListener('change',()=>{reset();refresh();if($('#inst').value)setTimeout(()=>G.zoomToFit(800,60),1500)}));
+ $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')go(resolve(e.target.value))});
+ $('#q').addEventListener('change',e=>{const n=ALL.nodes.find(x=>label(x)===e.target.value);if(n)go(n)});
+ $('#go').addEventListener('click',findPath);
+ $('#reset').addEventListener('click',()=>{['#q','#from','#to'].forEach(s=>$(s).value='');$('#inst').value='';$('#cWin').checked=$('#cSim').checked=$('#cQ').checked=true;reset();refresh();setTimeout(()=>G.zoomToFit(800,40),300)});
+ $('#panel').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(byId.get(b.dataset.go))});
+ const m=location.hash.match(/^#q-(\d+)$/);if(m&&byId.get('Q:'+m[1]))setTimeout(()=>go(byId.get('Q:'+m[1])),2500);
+}).catch(()=>{$('#err').style.display='grid';$('#status').textContent='Data not loaded'});
+}
+</script>
+</body>
+</html>
